@@ -18,6 +18,17 @@ const validateUserSignup = [
   }),
 ];
 
+const validateUserChange = [
+  body("email").isEmail(),
+  body("firstName").exists(),
+  body("firstName").isLength({ min: 1 }),
+  body("lastName").exists(),
+  body("lastName").isLength({ min: 1 }),
+  body("phone").exists(),
+  body("phone").isLength({ min: 10, max: 10 }),
+  body("password").isLength({ min: 8 }),
+  body("password").exists(),
+];
 const validateAddPet = [
   body("name").exists(),
   body("name").isLength({ min: 1 }),
@@ -49,4 +60,28 @@ const handleValidationErrors = (req, res, next) => {
   }
 };
 
-module.exports = { validateUserSignup, validateAddPet, handleValidationErrors };
+const handleValidationUserChange = (req, res, next) => {
+  const errors = validationResult(req);
+  if (errors.isEmpty()) {
+    next();
+  } else {
+    let message = "";
+    for (let k = 0; k < errors.array().length; k++) {
+      message =
+        message +
+        errors.array()[k].msg +
+        " for " +
+        errors.array()[k].param +
+        ". ";
+    }
+    res.json({ message: message });
+  }
+};
+
+module.exports = {
+  validateUserSignup,
+  validateAddPet,
+  validateUserChange,
+  handleValidationErrors,
+  handleValidationUserChange,
+};
